@@ -1,0 +1,913 @@
+openapi: 3.1.1
+info:
+  title: Hyperliquid HTTP API
+  version: "1.0.0"
+  description: >
+    REST API of Hyperliquid: POST /info for read-only queries and POST /exchange for
+    signed trading and account actions. See schemas with discriminator by "type".
+servers:
+  - url: https://api.hyperliquid.xyz
+    description: Mainnet
+  - url: https://api.hyperliquid-testnet.xyz
+    description: Testnet
+tags:
+  - name: Info
+    description: Read-only queries via POST /info
+  - name: Exchange
+    description: Signed actions via POST /exchange
+paths:
+  /info:
+    post:
+      tags: [Info]
+      summary: Info endpoint
+      description: Multiplexed read-only queries selected by "type" in request body.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InfoRequest'
+      responses:
+        "200":
+          description: Successful info response (varies by type)
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Bad request
+  /exchange:
+    post:
+      tags: [Exchange]
+      summary: Exchange endpoint
+      description: Signed trading and account actions with "action.type" selecting operation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExchangeEnvelope'
+      responses:
+        "200":
+          description: Successful exchange response
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          description: Bad request
+components:
+  schemas:
+    # ---------- INFO ----------
+    InfoRequest:
+      oneOf:
+        - $ref: '#/components/schemas/AllMidsRequest'
+        - $ref: '#/components/schemas/OpenOrdersRequest'
+        - $ref: '#/components/schemas/FrontendOpenOrdersRequest'
+        - $ref: '#/components/schemas/UserFillsRequest'
+        - $ref: '#/components/schemas/UserFillsByTimeRequest'
+        - $ref: '#/components/schemas/UserRateLimitRequest'
+        - $ref: '#/components/schemas/OrderStatusRequest'
+        - $ref: '#/components/schemas/L2BookRequest'
+        - $ref: '#/components/schemas/CandleSnapshotRequest'
+        - $ref: '#/components/schemas/MaxBuilderFeeRequest'
+        - $ref: '#/components/schemas/HistoricalOrdersRequest'
+        - $ref: '#/components/schemas/UserTwapSliceFillsRequest'
+        - $ref: '#/components/schemas/SubAccountsRequest'
+        - $ref: '#/components/schemas/VaultDetailsRequest'
+        - $ref: '#/components/schemas/UserVaultEquitiesRequest'
+        - $ref: '#/components/schemas/UserRoleRequest'
+        - $ref: '#/components/schemas/PortfolioRequest'
+        - $ref: '#/components/schemas/ReferralRequest'
+        - $ref: '#/components/schemas/UserFeesRequest'
+        - $ref: '#/components/schemas/DelegationsRequest'
+        - $ref: '#/components/schemas/DelegatorSummaryRequest'
+        - $ref: '#/components/schemas/DelegatorHistoryRequest'
+        - $ref: '#/components/schemas/DelegatorRewardsRequest'
+        - $ref: '#/components/schemas/RecentTradesRequest'
+        - $ref: '#/components/schemas/PerpDexsRequest'
+        - $ref: '#/components/schemas/MetaRequest'
+        - $ref: '#/components/schemas/MetaAndAssetCtxsRequest'
+        - $ref: '#/components/schemas/ClearinghouseStateRequest'
+        - $ref: '#/components/schemas/UserFundingRequest'
+        - $ref: '#/components/schemas/UserNonFundingLedgerUpdatesRequest'
+        - $ref: '#/components/schemas/FundingHistoryRequest'
+        - $ref: '#/components/schemas/PredictedFundingsRequest'
+        - $ref: '#/components/schemas/PerpsAtOpenInterestCapRequest'
+        - $ref: '#/components/schemas/PerpDeployAuctionStatusRequest'
+        - $ref: '#/components/schemas/ActiveAssetDataRequest'
+        - $ref: '#/components/schemas/PerpDexLimitsRequest'
+        - $ref: '#/components/schemas/SpotMetaRequest'
+        - $ref: '#/components/schemas/SpotMetaAndAssetCtxsRequest'
+        - $ref: '#/components/schemas/SpotClearinghouseStateRequest'
+        - $ref: '#/components/schemas/SpotDeployStateRequest'
+        - $ref: '#/components/schemas/SpotPairDeployAuctionStatusRequest'
+        - $ref: '#/components/schemas/TokenDetailsRequest'
+      discriminator:
+        propertyName: type
+        mapping:
+          allMids: '#/components/schemas/AllMidsRequest'
+          openOrders: '#/components/schemas/OpenOrdersRequest'
+          frontendOpenOrders: '#/components/schemas/FrontendOpenOrdersRequest'
+          userFills: '#/components/schemas/UserFillsRequest'
+          userFillsByTime: '#/components/schemas/UserFillsByTimeRequest'
+          userRateLimit: '#/components/schemas/UserRateLimitRequest'
+          orderStatus: '#/components/schemas/OrderStatusRequest'
+          l2Book: '#/components/schemas/L2BookRequest'
+          candleSnapshot: '#/components/schemas/CandleSnapshotRequest'
+          maxBuilderFee: '#/components/schemas/MaxBuilderFeeRequest'
+          historicalOrders: '#/components/schemas/HistoricalOrdersRequest'
+          userTwapSliceFills: '#/components/schemas/UserTwapSliceFillsRequest'
+          subAccounts: '#/components/schemas/SubAccountsRequest'
+          vaultDetails: '#/components/schemas/VaultDetailsRequest'
+          userVaultEquities: '#/components/schemas/UserVaultEquitiesRequest'
+          userRole: '#/components/schemas/UserRoleRequest'
+          portfolio: '#/components/schemas/PortfolioRequest'
+          referral: '#/components/schemas/ReferralRequest'
+          userFees: '#/components/schemas/UserFeesRequest'
+          delegations: '#/components/schemas/DelegationsRequest'
+          delegatorSummary: '#/components/schemas/DelegatorSummaryRequest'
+          delegatorHistory: '#/components/schemas/DelegatorHistoryRequest'
+          delegatorRewards: '#/components/schemas/DelegatorRewardsRequest'
+          recentTrades: '#/components/schemas/RecentTradesRequest'
+          perpDexs: '#/components/schemas/PerpDexsRequest'
+          meta: '#/components/schemas/MetaRequest'
+          metaAndAssetCtxs: '#/components/schemas/MetaAndAssetCtxsRequest'
+          clearinghouseState: '#/components/schemas/ClearinghouseStateRequest'
+          userFunding: '#/components/schemas/UserFundingRequest'
+          userNonFundingLedgerUpdates: '#/components/schemas/UserNonFundingLedgerUpdatesRequest'
+          fundingHistory: '#/components/schemas/FundingHistoryRequest'
+          predictedFundings: '#/components/schemas/PredictedFundingsRequest'
+          perpsAtOpenInterestCap: '#/components/schemas/PerpsAtOpenInterestCapRequest'
+          perpDeployAuctionStatus: '#/components/schemas/PerpDeployAuctionStatusRequest'
+          activeAssetData: '#/components/schemas/ActiveAssetDataRequest'
+          perpDexLimits: '#/components/schemas/PerpDexLimitsRequest'
+          spotMeta: '#/components/schemas/SpotMetaRequest'
+          spotMetaAndAssetCtxs: '#/components/schemas/SpotMetaAndAssetCtxsRequest'
+          spotClearinghouseState: '#/components/schemas/SpotClearinghouseStateRequest'
+          spotDeployState: '#/components/schemas/SpotDeployStateRequest'
+          spotPairDeployAuctionStatus: '#/components/schemas/SpotPairDeployAuctionStatusRequest'
+          tokenDetails: '#/components/schemas/TokenDetailsRequest'
+
+    AllMidsRequest:
+      type: object
+      properties:
+        type: { const: allMids }
+        dex:
+          type: string
+          description: Perp DEX name; empty string is default perp DEX; spot mids only with first perp DEX
+      required: [type]
+
+    OpenOrdersRequest:
+      type: object
+      properties:
+        type: { const: openOrders }
+        user:
+          type: string
+          description: 42-char hex address
+        dex:
+          type: string
+          description: Perp DEX name; empty string is default perp DEX; spot open orders only with first perp DEX
+      required: [type, user]
+
+    FrontendOpenOrdersRequest:
+      type: object
+      properties:
+        type: { const: frontendOpenOrders }
+        user: { type: string }
+        dex: { type: string }
+      required: [type, user]
+
+    UserFillsRequest:
+      type: object
+      properties:
+        type: { const: userFills }
+        user: { type: string }
+        aggregateByTime: { type: boolean }
+      required: [type, user]
+
+    UserFillsByTimeRequest:
+      type: object
+      properties:
+        type: { const: userFillsByTime }
+        user: { type: string }
+        startTime:
+          type: integer
+          description: ms epoch inclusive
+        endTime:
+          type: integer
+          description: ms epoch inclusive (defaults to now)
+        aggregateByTime: { type: boolean }
+      required: [type, user, startTime]
+
+    UserRateLimitRequest:
+      type: object
+      properties:
+        type: { const: userRateLimit }
+        user: { type: string }
+      required: [type, user]
+
+    OrderStatusRequest:
+      type: object
+      properties:
+        type: { const: orderStatus }
+        user: { type: string }
+        oid:
+          oneOf:
+            - type: integer
+            - type: string
+          description: Order ID (u64) or 16-byte hex client order id (cloid)
+      required: [type, user, oid]
+
+    L2BookRequest:
+      type: object
+      properties:
+        type: { const: l2Book }
+        coin: { type: string }
+        nSigFigs:
+          type: integer
+          enum: [2, 3, 4, 5]
+          nullable: true
+        mantissa:
+          type: integer
+          enum: [1, 2, 5]
+          description: Only allowed when nSigFigs=5
+      required: [type, coin]
+
+    CandleSnapshotRequest:
+      type: object
+      properties:
+        type: { const: candleSnapshot }
+        req:
+          type: object
+          properties:
+            coin: { type: string }
+            interval:
+              type: string
+              enum: ["1m","3m","5m","15m","30m","1h","2h","4h","8h","12h","1d","3d","1w","1M"]
+            startTime: { type: integer }
+            endTime: { type: integer }
+          required: [coin, interval, startTime]
+      required: [type, req]
+
+    MaxBuilderFeeRequest:
+      type: object
+      properties:
+        type: { const: maxBuilderFee }
+        user: { type: string }
+        builder: { type: string }
+      required: [type, user, builder]
+
+    HistoricalOrdersRequest:
+      type: object
+      properties:
+        type: { const: historicalOrders }
+        user: { type: string }
+      required: [type, user]
+
+    UserTwapSliceFillsRequest:
+      type: object
+      properties:
+        type: { const: userTwapSliceFills }
+        user: { type: string }
+      required: [type, user]
+
+    SubAccountsRequest:
+      type: object
+      properties:
+        type: { const: subAccounts }
+        user: { type: string }
+      required: [type, user]
+
+    VaultDetailsRequest:
+      type: object
+      properties:
+        type: { const: vaultDetails }
+        vaultAddress: { type: string }
+        user:
+          type: string
+          description: Optional user to compute relationship/permissions
+      required: [type, vaultAddress]
+
+    UserVaultEquitiesRequest:
+      type: object
+      properties:
+        type: { const: userVaultEquities }
+        user: { type: string }
+      required: [type, user]
+
+    UserRoleRequest:
+      type: object
+      properties:
+        type: { const: userRole }
+        user: { type: string }
+      required: [type, user]
+
+    PortfolioRequest:
+      type: object
+      properties:
+        type: { const: portfolio }
+        user: { type: string }
+      required: [type, user]
+
+    ReferralRequest:
+      type: object
+      properties:
+        type: { const: referral }
+        user: { type: string }
+      required: [type, user]
+
+    UserFeesRequest:
+      type: object
+      properties:
+        type: { const: userFees }
+        user: { type: string }
+      required: [type, user]
+
+    DelegationsRequest:
+      type: object
+      properties:
+        type: { const: delegations }
+        user: { type: string }
+      required: [type, user]
+
+    DelegatorSummaryRequest:
+      type: object
+      properties:
+        type: { const: delegatorSummary }
+        user: { type: string }
+      required: [type, user]
+
+    DelegatorHistoryRequest:
+      type: object
+      properties:
+        type: { const: delegatorHistory }
+        user: { type: string }
+      required: [type, user]
+
+    DelegatorRewardsRequest:
+      type: object
+      properties:
+        type: { const: delegatorRewards }
+        user: { type: string }
+      required: [type, user]
+
+    RecentTradesRequest:
+      type: object
+      properties:
+        type: { const: recentTrades }
+        coin:
+          type: string
+          description: Asset identifier; perps use names like "BTC", spot uses "@{index}" or "BASE/QUOTE"
+      required: [type, coin]
+
+    PerpDexsRequest:
+      type: object
+      properties:
+        type: { const: perpDexs }
+      required: [type]
+
+    MetaRequest:
+      type: object
+      properties:
+        type: { const: meta }
+        dex:
+          type: string
+          description: Perp dex name; empty string defaults to the first perp dex
+      required: [type]
+
+    MetaAndAssetCtxsRequest:
+      type: object
+      properties:
+        type: { const: metaAndAssetCtxs }
+        dex:
+          type: string
+          description: Perp dex name; empty string defaults to the first perp dex
+      required: [type]
+
+    ClearinghouseStateRequest:
+      type: object
+      properties:
+        type: { const: clearinghouseState }
+        user:
+          type: string
+          description: 42-char hex address
+        dex:
+          type: string
+          description: Perp dex name; empty string defaults to the first perp dex
+      required: [type, user]
+
+    UserFundingRequest:
+      type: object
+      properties:
+        type: { const: userFunding }
+        user: { type: string }
+        startTime: { type: integer, description: ms epoch inclusive }
+        endTime: { type: integer, description: ms epoch inclusive (defaults to now) }
+      required: [type, user, startTime]
+
+    UserNonFundingLedgerUpdatesRequest:
+      type: object
+      properties:
+        type: { const: userNonFundingLedgerUpdates }
+        user: { type: string }
+        startTime: { type: integer }
+        endTime: { type: integer }
+      required: [type, user, startTime]
+
+    FundingHistoryRequest:
+      type: object
+      properties:
+        type: { const: fundingHistory }
+        coin: { type: string }
+        startTime: { type: integer }
+        endTime: { type: integer }
+      required: [type, coin, startTime]
+
+    PredictedFundingsRequest:
+      type: object
+      properties:
+        type: { const: predictedFundings }
+      required: [type]
+
+    PerpsAtOpenInterestCapRequest:
+      type: object
+      properties:
+        type: { const: perpsAtOpenInterestCap }
+      required: [type]
+
+    PerpDeployAuctionStatusRequest:
+      type: object
+      properties:
+        type: { const: perpDeployAuctionStatus }
+      required: [type]
+
+    ActiveAssetDataRequest:
+      type: object
+      properties:
+        type: { const: activeAssetData }
+        user: { type: string }
+        coin: { type: string }
+      required: [type, user, coin]
+
+    PerpDexLimitsRequest:
+      type: object
+      properties:
+        type: { const: perpDexLimits }
+        dex:
+          type: string
+          description: Perp dex name; empty string not allowed
+      required: [type, dex]
+
+    SpotMetaRequest:
+      type: object
+      properties:
+        type: { const: spotMeta }
+      required: [type]
+
+    SpotMetaAndAssetCtxsRequest:
+      type: object
+      properties:
+        type: { const: spotMetaAndAssetCtxs }
+      required: [type]
+
+    SpotClearinghouseStateRequest:
+      type: object
+      properties:
+        type: { const: spotClearinghouseState }
+        user: { type: string }
+      required: [type, user]
+
+    SpotDeployStateRequest:
+      type: object
+      properties:
+        type: { const: spotDeployState }
+        user: { type: string }
+      required: [type, user]
+
+    SpotPairDeployAuctionStatusRequest:
+      type: object
+      properties:
+        type: { const: spotPairDeployAuctionStatus }
+      required: [type]
+
+    TokenDetailsRequest:
+      type: object
+      properties:
+        type: { const: tokenDetails }
+        tokenId:
+          type: string
+          description: 34-character hex token id
+      required: [type, tokenId]
+
+
+    # ---------- EXCHANGE ----------
+    ExchangeEnvelope:
+      type: object
+      properties:
+        action:
+          $ref: '#/components/schemas/ExchangeAction'
+        nonce:
+          type: integer
+          description: Recommended current timestamp (ms)
+        signature:
+          type: object
+          description: Signature object produced per SDK; format depends on action
+          additionalProperties: true
+        vaultAddress:
+          type: string
+          description: If acting on behalf of subaccount/vault
+        expiresAfter:
+          type: integer
+          description: Optional ms timestamp after which action is rejected
+      required: [action, nonce, signature]
+
+    ExchangeAction:
+      oneOf:
+        - $ref: '#/components/schemas/OrderAction'
+        - $ref: '#/components/schemas/CancelAction'
+        - $ref: '#/components/schemas/CancelByCloidAction'
+        - $ref: '#/components/schemas/ScheduleCancelAction'
+        - $ref: '#/components/schemas/ModifyAction'
+        - $ref: '#/components/schemas/BatchModifyAction'
+        - $ref: '#/components/schemas/UpdateLeverageAction'
+        - $ref: '#/components/schemas/UpdateIsolatedMarginAction'
+        - $ref: '#/components/schemas/UsdSendAction'
+        - $ref: '#/components/schemas/SpotSendAction'
+        - $ref: '#/components/schemas/Withdraw3Action'
+        - $ref: '#/components/schemas/UsdClassTransferAction'
+        - $ref: '#/components/schemas/SendAssetAction'
+        - $ref: '#/components/schemas/CDepositAction'
+        - $ref: '#/components/schemas/CWithdrawAction'
+        - $ref: '#/components/schemas/TokenDelegateAction'
+        - $ref: '#/components/schemas/VaultTransferAction'
+        - $ref: '#/components/schemas/ApproveAgentAction'
+        - $ref: '#/components/schemas/ApproveBuilderFeeAction'
+        - $ref: '#/components/schemas/TwapOrderAction'
+        - $ref: '#/components/schemas/TwapCancelAction'
+        - $ref: '#/components/schemas/ReserveRequestWeightAction'
+        - $ref: '#/components/schemas/NoopAction'
+      discriminator:
+        propertyName: type
+        mapping:
+          order: '#/components/schemas/OrderAction'
+          cancel: '#/components/schemas/CancelAction'
+          cancelByCloid: '#/components/schemas/CancelByCloidAction'
+          scheduleCancel: '#/components/schemas/ScheduleCancelAction'
+          modify: '#/components/schemas/ModifyAction'
+          batchModify: '#/components/schemas/BatchModifyAction'
+          updateLeverage: '#/components/schemas/UpdateLeverageAction'
+          updateIsolatedMargin: '#/components/schemas/UpdateIsolatedMarginAction'
+          usdSend: '#/components/schemas/UsdSendAction'
+          spotSend: '#/components/schemas/SpotSendAction'
+          withdraw3: '#/components/schemas/Withdraw3Action'
+          usdClassTransfer: '#/components/schemas/UsdClassTransferAction'
+          sendAsset: '#/components/schemas/SendAssetAction'
+          cDeposit: '#/components/schemas/CDepositAction'
+          cWithdraw: '#/components/schemas/CWithdrawAction'
+          tokenDelegate: '#/components/schemas/TokenDelegateAction'
+          vaultTransfer: '#/components/schemas/VaultTransferAction'
+          approveAgent: '#/components/schemas/ApproveAgentAction'
+          approveBuilderFee: '#/components/schemas/ApproveBuilderFeeAction'
+          twapOrder: '#/components/schemas/TwapOrderAction'
+          twapCancel: '#/components/schemas/TwapCancelAction'
+          reserveRequestWeight: '#/components/schemas/ReserveRequestWeightAction'
+          noop: '#/components/schemas/NoopAction'
+
+    Tif:
+      type: string
+      enum: [Alo, Ioc, Gtc]
+
+    Cloid:
+      type: string
+      description: 128-bit hex client order id (e.g. 0x1234...abcd)
+
+    OrderTypeUnion:
+      oneOf:
+        - type: object
+          properties:
+            limit:
+              type: object
+              properties:
+                tif:
+                  $ref: '#/components/schemas/Tif'
+              required: [tif]
+          required: [limit]
+          additionalProperties: false
+        - type: object
+          properties:
+            trigger:
+              type: object
+              properties:
+                isMarket: { type: boolean }
+                triggerPx: { type: string }
+                tpsl:
+                  type: string
+                  enum: [tp, sl]
+              required: [isMarket, triggerPx, tpsl]
+          required: [trigger]
+          additionalProperties: false
+
+    OrderPayload:
+      type: object
+      properties:
+        a: { type: integer, description: Asset id }
+        b: { type: boolean, description: isBuy }
+        p: { type: string, description: price }
+        s: { type: string, description: size }
+        r: { type: boolean, description: reduceOnly }
+        t:
+          $ref: '#/components/schemas/OrderTypeUnion'
+        c:
+          $ref: '#/components/schemas/Cloid'
+      required: [a, b, p, s, r, t]
+      additionalProperties: false
+
+    OrderAction:
+      type: object
+      properties:
+        type: { const: order }
+        orders:
+          type: array
+          items: { $ref: '#/components/schemas/OrderPayload' }
+        grouping:
+          type: string
+          enum: [na, normalTpsl, positionTpsl]
+        builder:
+          type: object
+          description: Optional builder fee
+          properties:
+            b: { type: string, description: builder address }
+            f: { type: integer, description: tenths of a basis point }
+          required: [b, f]
+      required: [type, orders]
+      additionalProperties: false
+
+    CancelAction:
+      type: object
+      properties:
+        type: { const: cancel }
+        cancels:
+          type: array
+          items:
+            type: object
+            properties:
+              a: { type: integer, description: asset }
+              o: { type: integer, description: oid }
+            required: [a, o]
+      required: [type, cancels]
+      additionalProperties: false
+
+    CancelByCloidAction:
+      type: object
+      properties:
+        type: { const: cancelByCloid }
+        cancels:
+          type: array
+          items:
+            type: object
+            properties:
+              asset: { type: integer }
+              cloid: { $ref: '#/components/schemas/Cloid' }
+            required: [asset, cloid]
+      required: [type, cancels]
+      additionalProperties: false
+
+    ScheduleCancelAction:
+      type: object
+      properties:
+        type: { const: scheduleCancel }
+        time:
+          type: integer
+          description: Optional ms timestamp; omit to remove schedule
+      required: [type]
+      additionalProperties: false
+
+    ModifyAction:
+      type: object
+      properties:
+        type: { const: modify }
+        oid:
+          oneOf:
+            - type: integer
+            - $ref: '#/components/schemas/Cloid'
+        order:
+          $ref: '#/components/schemas/OrderPayload'
+      required: [type, oid, order]
+      additionalProperties: false
+
+    BatchModifyAction:
+      type: object
+      properties:
+        type: { const: batchModify }
+        modifies:
+          type: array
+          items:
+            type: object
+            properties:
+              oid:
+                oneOf:
+                  - type: integer
+                  - $ref: '#/components/schemas/Cloid'
+              order:
+                $ref: '#/components/schemas/OrderPayload'
+            required: [oid, order]
+      required: [type, modifies]
+      additionalProperties: false
+
+    UpdateLeverageAction:
+      type: object
+      properties:
+        type: { const: updateLeverage }
+        asset: { type: integer }
+        isCross: { type: boolean }
+        leverage: { type: integer }
+      required: [type, asset, isCross, leverage]
+      additionalProperties: false
+
+    UpdateIsolatedMarginAction:
+      type: object
+      properties:
+        type: { const: updateIsolatedMargin }
+        asset: { type: integer }
+        isBuy: { type: boolean, description: No-op until hedge mode }
+        ntli: { type: integer, description: micro USDC (1e-6), e.g. 1_000_000 = 1 USDC }
+      required: [type, asset, isBuy, ntli]
+      additionalProperties: false
+
+    UsdSendAction:
+      type: object
+      properties:
+        type: { const: usdSend }
+        hyperliquidChain: { type: string, enum: [Mainnet, Testnet] }
+        signatureChainId: { type: string, description: hex chain id (e.g. 0xa4b1) }
+        destination: { type: string }
+        amount: { type: string }
+        time: { type: integer, description: ms epoch; must match outer nonce }
+      required: [type, hyperliquidChain, signatureChainId, destination, amount, time]
+      additionalProperties: false
+
+    SpotSendAction:
+      type: object
+      properties:
+        type: { const: spotSend }
+        hyperliquidChain: { type: string, enum: [Mainnet, Testnet] }
+        signatureChainId: { type: string }
+        destination: { type: string }
+        token: { type: string, description: tokenName:tokenId }
+        amount: { type: string }
+        time: { type: integer }
+      required: [type, hyperliquidChain, signatureChainId, destination, token, amount, time]
+      additionalProperties: false
+
+    Withdraw3Action:
+      type: object
+      properties:
+        type: { const: withdraw3 }
+        hyperliquidChain: { type: string, enum: [Mainnet, Testnet] }
+        signatureChainId: { type: string }
+        amount: { type: string }
+        time: { type: integer }
+        destination: { type: string }
+      required: [type, hyperliquidChain, signatureChainId, amount, time, destination]
+      additionalProperties: false
+
+    UsdClassTransferAction:
+      type: object
+      properties:
+        type: { const: usdClassTransfer }
+        hyperliquidChain: { type: string, enum: [Mainnet, Testnet] }
+        signatureChainId: { type: string }
+        amount: { type: string, description: amount; optional "subaccount:<address>" suffix in docs }
+        toPerp: { type: boolean }
+        nonce: { type: integer, description: ms epoch; must match outer nonce }
+      required: [type, hyperliquidChain, signatureChainId, amount, toPerp, nonce]
+      additionalProperties: false
+
+    SendAssetAction:
+      type: object
+      properties:
+        type: { const: sendAsset }
+        hyperliquidChain: { type: string, enum: [Mainnet, Testnet] }
+        signatureChainId: { type: string }
+        destination: { type: string }
+        sourceDex: { type: string, description: "" }
+        destinationDex: { type: string, description: "" }
+        token: { type: string, description: tokenName:tokenId }
+        amount: { type: string }
+        fromSubAccount:
+          type: string
+          description: 42-char hex or empty string
+        nonce: { type: integer }
+      required: [type, hyperliquidChain, signatureChainId, destination, sourceDex, destinationDex, token, amount, fromSubAccount, nonce]
+      additionalProperties: false
+
+    CDepositAction:
+      type: object
+      properties:
+        type: { const: cDeposit }
+        hyperliquidChain: { type: string, enum: [Mainnet, Testnet] }
+        signatureChainId: { type: string }
+        wei: { type: integer }
+        nonce: { type: integer }
+      required: [type, hyperliquidChain, signatureChainId, wei, nonce]
+      additionalProperties: false
+
+    CWithdrawAction:
+      type: object
+      properties:
+        type: { const: cWithdraw }
+        hyperliquidChain: { type: string, enum: [Mainnet, Testnet] }
+        signatureChainId: { type: string }
+        wei: { type: integer }
+        nonce: { type: integer }
+      required: [type, hyperliquidChain, signatureChainId, wei, nonce]
+      additionalProperties: false
+
+    TokenDelegateAction:
+      type: object
+      properties:
+        type: { const: tokenDelegate }
+        hyperliquidChain: { type: string, enum: [Mainnet, Testnet] }
+        signatureChainId: { type: string }
+        validator: { type: string }
+        isUndelegate: { type: boolean }
+        wei: { type: integer }
+        nonce: { type: integer }
+      required: [type, hyperliquidChain, signatureChainId, validator, isUndelegate, wei, nonce]
+      additionalProperties: false
+
+    VaultTransferAction:
+      type: object
+      properties:
+        type: { const: vaultTransfer }
+        vaultAddress: { type: string }
+        isDeposit: { type: boolean }
+        usd: { type: number }
+      required: [type, vaultAddress, isDeposit, usd]
+      additionalProperties: false
+
+    ApproveAgentAction:
+      type: object
+      properties:
+        type: { const: approveAgent }
+        hyperliquidChain: { type: string, enum: [Mainnet, Testnet] }
+        signatureChainId: { type: string }
+        agentAddress: { type: string }
+        agentName: { type: string }
+        nonce: { type: integer }
+      required: [type, hyperliquidChain, signatureChainId, agentAddress, nonce]
+      additionalProperties: false
+
+    ApproveBuilderFeeAction:
+      type: object
+      properties:
+        type: { const: approveBuilderFee }
+        hyperliquidChain: { type: string, enum: [Mainnet, Testnet] }
+        signatureChainId: { type: string }
+        maxFeeRate: { type: string, description: percent string e.g. "0.001%" }
+        builder: { type: string }
+        nonce: { type: integer }
+      required: [type, hyperliquidChain, signatureChainId, maxFeeRate, builder, nonce]
+      additionalProperties: false
+
+    TwapOrderAction:
+      type: object
+      properties:
+        type: { const: twapOrder }
+        twap:
+          type: object
+          properties:
+            a: { type: integer, description: asset }
+            b: { type: boolean, description: isBuy }
+            s: { type: string, description: size }
+            r: { type: boolean, description: reduceOnly }
+            m: { type: integer, description: minutes }
+            t: { type: boolean, description: randomize }
+          required: [a, b, s, r, m, t]
+      required: [type, twap]
+      additionalProperties: false
+
+    TwapCancelAction:
+      type: object
+      properties:
+        type: { const: twapCancel }
+        a: { type: integer, description: asset }
+        t: { type: integer, description: twapId }
+      required: [type, a, t]
+      additionalProperties: false
+
+    ReserveRequestWeightAction:
+      type: object
+      properties:
+        type: { const: reserveRequestWeight }
+        weight: { type: integer }
+      required: [type, weight]
+      additionalProperties: false
+
+    NoopAction:
+      type: object
+      properties:
+        type: { const: noop }
+      required: [type]
+      additionalProperties: false
