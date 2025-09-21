@@ -17,3 +17,12 @@ This OpenAPI specification can be used to:
 - Validate API requests and responses
 - Generate API documentation
 - Set up API mocking for development and testing
+
+
+## Development
+
+Linting of the OpenAPI specification is done using [Spectral](https://github.com/stoplightio/spectral).
+
+```
+npx @stoplight/spectral-cli lint openapi.yml
+```
